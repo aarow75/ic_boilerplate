@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name = "viewport" content = "width = device-width" />	
+	<script src="ic.js"></script>
+	<script src="ic.table.js"></script>
+	<script src="ic.list.js"></script>
+	<script src="data.js"></script>
+	<script>
+	// Draw the dom after the page loads.
+	IC.Element.addEventListener(document, "DOMContentLoaded", function() {
+		var widgets = document.querySelector(".widgets");
+		new IC.Table(widgets, IC._volume, "table", "responsive", "", "volumes", false);
+		new IC.List(widgets, IC._alerts, "", "list", "alerts");		
+	});	
+	</script>
+</head>
+<body>
+	<div class="widgets"></div>	
+</body>
+</html>
