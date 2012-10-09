@@ -79,8 +79,7 @@ IC.localStorage = {
 IC.Element = {};
 
 IC.Element.addEventListener = function(element, eventType, method) {
-	//"use strict";
-	console.log(Function.caller)
+	"use strict";
 	if (element.addEventListener) {
 		element.addEventListener(eventType, method, false);
 	} else {
