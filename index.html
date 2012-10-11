@@ -10,7 +10,16 @@
 	// Draw the dom after the page loads.
 	IC.Element.addEventListener(document, "DOMContentLoaded", function() {
 		var widgets = document.querySelector(".widgets");
-		new IC.Table(widgets, IC._volume, "table", "responsive", "", "volumes", false);
+		var obj = {
+				parent: widgets,
+				data: IC._volume,
+				id: "table",
+				className: "responsive",
+				containerId: "",
+				containerClassName: "volumes",
+				drawSearch: true
+		};
+		new IC.Table(obj);
 		new IC.List(widgets, IC._alerts, "", "list", "alerts");		
 	});	
 	</script>
