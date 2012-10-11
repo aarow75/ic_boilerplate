@@ -6,10 +6,12 @@
 	<script src="js/ic.table.js"></script>
 	<script src="js/ic.list.js"></script>
 	<script src="js/data.js"></script>
+	<link rel="stylesheet" href="css/modalDialog.css" />
 	<script>
 	// Draw the dom after the page loads.
 	IC.Element.addEventListener(document, "DOMContentLoaded", function() {
 		var widgets = document.querySelector(".widgets");
+		var modalDialog = document.querySelector("#dialog div");
 		var obj = {
 				parent: widgets,
 				data: IC._volume,
@@ -20,11 +22,15 @@
 				drawSearch: true
 		};
 		new IC.Table(obj);
-		new IC.List(widgets, IC._alerts, "", "list", "alerts");		
+		new IC.List(modalDialog, IC._alerts, "", "list", "alerts");		
 	});	
 	</script>
 </head>
 <body>
 	<div class="widgets"></div>	
+	<a href="#dialog">Open ALERTS</a>
+	<div id="dialog" class="modalDialog">
+		<div><a href="#close" title="Close" class="close">X</a></div>
+	</div>
 </body>
 </html>
