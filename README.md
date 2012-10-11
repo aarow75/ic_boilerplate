@@ -29,15 +29,13 @@ js/ic.list.js
 
 With the data format as follows:
 
-`
-{
->	title:"(Optional) The title of my list",
->	items:[
->>		{text:"April promotions", attributes:{href:"#"}},
->>		{text:"January renewals", attributes:{href:"#"}}
->	]
-}
-`
+	{
+		title:"(Optional) The title of my list",
+		items:[
+			{text:"April promotions", attributes:{href:"#"}},
+			{text:"January renewals", attributes:{href:"#"}}
+		]
+	}
 
 js/data.js
 ----------
