@@ -76,3 +76,19 @@ IC._page_nav = {
 	{text:"<img src=\"images/81-dashboard.png\" /><br />Saved Reports",attributes:{href:"#","class":"saved-reports"}}
 	]
 }
+
+IC._site_nav = {
+	items:[
+	{text:"HOME",attributes:{href:"#"}},
+	{text:"CRM",attributes:{href:"#"}},
+	{text:"My Blog",attributes:{href:"#"}},
+	{text:"Personal Website",attributes:{href:"#"}},
+	{text:"Ecards",attributes:{href:"#"}},
+	{text:"My Business",attributes:{href:"#"}},
+	{text:"Feedback",attributes:{href:"#"}},
+	{text:"Calendar",attributes:{href:"#"}},
+	{text:"Videos",attributes:{href:"#"}},
+	{text:"Inbox",attributes:{href:"#"}},
+	{text:"Profile",attributes:{href:"#"}}
+	]
+}
