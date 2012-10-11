@@ -35,9 +35,44 @@ if (!Object.prototype.isObject) {
 	}
 }
 
+if (!Function.prototype.bind) {
+  Function.prototype.bind = function (oThis) {
+    if (typeof this !== "function") {
+      // closest thing possible to the ECMAScript 5 internal IsCallable function
+      throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
+    }
+ 
+    var aArgs = Array.prototype.slice.call(arguments, 1), 
+        fToBind = this, 
+        fNOP = function () {},
+        fBound = function () {
+          return fToBind.apply(this instanceof fNOP && oThis
+                                 ? this
+                                 : oThis,
+                               aArgs.concat(Array.prototype.slice.call(arguments)));
+        };
+ 
+    fNOP.prototype = this.prototype;
+    fBound.prototype = new fNOP();
+ 
+    return fBound;
+  };
+}
+
+Function.prototype.chain = function() {
+	var that = this;
+	return function() {
+		// New function runs the old function
+		var retVal = that.apply(this, arguments);
+		// Returns "this" if old function returned nothing
+		if (typeof retVal == "undefined") { return this; }
+	            // else returns old value
+		else { return retVal; }
+	}
+};
+
 var IC = window.IC === undefined ? { } : IC;
 
-// This is the same as window.localStorage, except it can store and retrieve serialized Arrays and Objects
 IC.generateGUID = function() {
     var S4 = function () {
         return Math.floor(
@@ -54,6 +89,7 @@ IC.generateGUID = function() {
         );
 }
 
+// This is the same as window.localStorage, except it can store and retrieve serialized Arrays and Objects
 IC.localStorage = {
 	setItem : function (key, value) {
         "use strict";
@@ -74,6 +110,31 @@ IC.localStorage = {
         "use strict";
 		window.localStorage.removeItem(key);
 	}
+};
+
+// Ajax methods go here inside the HTTP module
+IC.HTTP = {
+	// accepts a url and a boolean telling it to return the result as an Object rather than a String
+	get : function (url, asObject) {
+		//"use strict";
+        var request = new XMLHttpRequest();
+		request.open("GET", url, false);
+		request.send(null);
+		return asObject === true ? JSON.parse(request.responseText) : request.responseText;
+	},
+	valueForParameter:function(url, param) {
+		if (url.match(param)) {
+			var vars = [], hash;
+			var hashes = url.slice(url.indexOf('?') + 1).split('&');
+		    for(var i = 0; i < hashes.length; i++)
+		    {
+		        hash = hashes[i].split('=');
+		        vars.push(hash[0]);
+		        vars[hash[0]] = hash[1];
+		    }
+		    return vars[param].split("#")[0];
+		}
+	},
 };
 
 IC.Element = {};

@@ -83,6 +83,17 @@ Array.prototype.clean = function(deleteValue) {
   return this;
 };
 
+// supply a google spreadsheet url (the one provided in the )
+IC.HTTP.getSpreadsheetUrl = function(url, worksheet, callback) {
+	var key = IC.HTTP.valueForParameter(url, "key");
+	if (callback === undefined) {
+		return "http://spreadsheets.google.com/feeds/cells/"+key+"/"+worksheet+"/public/basic?alt=json";
+	} else {
+		return "http://spreadsheets.google.com/feeds/cells/"+key+"/"+worksheet+"/public/basic?alt=json-in-script&callback="+callback;
+	}
+		
+}
+
 // a rewrite of IC.Table using Google Spreadsheets API (based on Atom RSS format)
 IC.Table = function(obj){
 	var parent = obj.parent;
