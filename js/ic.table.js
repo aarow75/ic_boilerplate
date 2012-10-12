@@ -200,31 +200,35 @@ function drawDataContent(content, table, columnLength) {
 function convertFromSpreadsheet(data) {
 	var converted = {content: [], contentLength: []};
 	
-	//console.log(data.feed.entry[0]);
-	var rowLength = data.feed.openSearch$totalResults.$t;
-	var rows = data.feed.entry;
+	if (data.feed !== undefined) {
+		var rowLength = data.feed.openSearch$totalResults.$t;
+		var rows = data.feed.entry;
 
-	for (var row = 0; row < rowLength; row++) {
-		var text = rows[row].content.$t;
-		var cell = rows[row].title.$t;
-		var idArray = rows[row].id.$t.split("/");
-		var id = idArray[idArray.length-1];
-		var tableRow = id.replace("R","").split("C")[0] - 1;
-		var tableColumn = id.split("C")[1] - 1;
-		converted.content[tableRow] = [];
-	}
-	for (var row = 0; row < rowLength; row++) {
-		var text = rows[row].content.$t;
-		var cell = rows[row].title.$t;
-		var idArray = rows[row].id.$t.split("/");
-		var id = idArray[idArray.length-1];
-		var tableRow = id.replace("R","").split("C")[0] - 1;
-		var tableColumn = id.split("C")[1] - 1;
-		converted.content[tableRow][tableColumn] = {value:text};
-		converted.contentLength[tableRow] = tableColumn;
+		for (var row = 0; row < rowLength; row++) {
+			var text = rows[row].content.$t;
+			var cell = rows[row].title.$t;
+			var idArray = rows[row].id.$t.split("/");
+			var id = idArray[idArray.length-1];
+			var tableRow = id.replace("R","").split("C")[0] - 1;
+			var tableColumn = id.split("C")[1] - 1;
+			converted.content[tableRow] = [];
+		}
+		for (var row = 0; row < rowLength; row++) {
+			var text = rows[row].content.$t;
+			var cell = rows[row].title.$t;
+			var idArray = rows[row].id.$t.split("/");
+			var id = idArray[idArray.length-1];
+			var tableRow = id.replace("R","").split("C")[0] - 1;
+			var tableColumn = id.split("C")[1] - 1;
+			converted.content[tableRow][tableColumn] = {value:text};
+			converted.contentLength[tableRow] = tableColumn;
+		}	
+		return converted;	
+	} else {
+		// not a spreadsheet
+		return data;
 	}
 	
-	return converted;
 }
 
 function drawDataFeed(data, table) {
@@ -242,7 +246,6 @@ function drawDataFeed(data, table) {
 	// remove the header row (so it doesn't display in the table body)
 	content.shift();
 	drawDataContent(content, table, maxColumnWidth)
-	//console.log(data.feed.title.$t);
 }
 
 function drawSearchBox(parent, data) {
@@ -335,7 +338,6 @@ function findRow(columnIndex, searchString, rows) {
 	//if 	(headerRowIndex == 1) resultArray.splice(headerRowIndex, headerRowIndex);
 	// remove the header row (so it doesn't display in the table body)
 	//resultArray.shift();
-	console.log(resultArray);
 	newdata.content = resultArray;
 	return newdata;
 }
