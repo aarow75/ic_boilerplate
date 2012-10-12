@@ -124,7 +124,6 @@ IC.Table = function(obj){
 	// Draw column header
 	if (data.header !== undefined) {
 		drawDataHeader(data.header,table, data.header.length);
-
 	}
 	
 	// This is an ATOM feed (google spreadsheet)
@@ -142,9 +141,6 @@ function drawTable(parent, data, title) {
 		drawDataContent(data.content, table, data.content[0].length);		
 		//IC.TableSort(); // TODO: make this be a library function in a protected namespace, etc.
 	}
-	
-	//tableContainer.appendChild(table);
-	//parent.appendChild(tableContainer);
 }
 
 function drawDataHeader(header, table, columnLength) {
@@ -201,13 +197,12 @@ function drawDataContent(content, table, columnLength) {
 
 }
 
-function drawDataFeed(data, table) {
+function convertFromSpreadsheet(data) {
+	var converted = {content: [], contentLength: []};
+	
 	//console.log(data.feed.entry[0]);
 	var rowLength = data.feed.openSearch$totalResults.$t;
 	var rows = data.feed.entry;
-	// determines the column index and row index of each cell to build the table.
-	var content = [];
-	var contentLength = [];
 
 	for (var row = 0; row < rowLength; row++) {
 		var text = rows[row].content.$t;
@@ -216,7 +211,7 @@ function drawDataFeed(data, table) {
 		var id = idArray[idArray.length-1];
 		var tableRow = id.replace("R","").split("C")[0] - 1;
 		var tableColumn = id.split("C")[1] - 1;
-		content[tableRow] = [];
+		converted.content[tableRow] = [];
 	}
 	for (var row = 0; row < rowLength; row++) {
 		var text = rows[row].content.$t;
@@ -225,9 +220,17 @@ function drawDataFeed(data, table) {
 		var id = idArray[idArray.length-1];
 		var tableRow = id.replace("R","").split("C")[0] - 1;
 		var tableColumn = id.split("C")[1] - 1;
-		content[tableRow][tableColumn] = {value:text};
-		contentLength[tableRow] = tableColumn;
+		converted.content[tableRow][tableColumn] = {value:text};
+		converted.contentLength[tableRow] = tableColumn;
 	}
+	
+	return converted;
+}
+
+function drawDataFeed(data, table) {
+	var converted = convertFromSpreadsheet(data);
+	var content = converted.content;
+	var contentLength = converted.contentLength;
 	// find out how many columns the table should have
 	var maxColumnWidth = Math.max.apply(Math, contentLength.clean(undefined)) + 1;	// +1 since I removed something
 	if (includeHeaderRow) {
@@ -258,9 +261,15 @@ function drawSearchBox(parent, data) {
 	parent.appendChild(input);
 	
 	// column selector
-	for (var headerIndex = 0; headerIndex < data.header.length; headerIndex++) {
-		if (data.header[headerIndex].value !== undefined) {
-			columnSelect.add(new Option(data.header[headerIndex].value, headerIndex));
+	var content = convertFromSpreadsheet(data).content;
+	var header = data.header !== undefined? data.header: content[headerRowIndex];
+
+	for (var headerIndex = 0; headerIndex < header.length; headerIndex++) {
+		if (header[headerIndex].value !== undefined) {
+			columnSelect.add(new Option(header[headerIndex].value, headerIndex));
+		} else {
+			// is google spreadsheet format
+			columnSelect.add(new Option(header[headerIndex].value, headerIndex));
 		}
 	}
 	// if the user hits "enter" after selecting a column, trigger the search.
@@ -282,8 +291,7 @@ function drawSearchBox(parent, data) {
 	searchButton.setAttribute("type", "button");
 	IC.Element.addEventListener(searchButton, "click", function(){
 		if (input.value !== "" || input.value !== "*") {
-			//drawTable(parent, findRow(columnSelect.value, input.value));
-			drawTable(parent, findRow(columnSelect.value, input.value));
+			drawTable(parent, findRow(columnSelect.value, input.value, content));
 		} else {
 			drawTable(parent, data);
 		}
@@ -297,23 +305,37 @@ function drawSearchBox(parent, data) {
 	});
 }
 
-function findRow(columnIndex, searchString) {
-	var columns = data.header;
-	var rows = data.content;
+function findRow(columnIndex, searchString, rows) {
+	rows.clean(undefined);
+	var columns = rows[headerRowIndex];
 	var rowsLength = rows.length;
 	var resultArray = [];
+	/*
+	if 	(headerRowIndex == 1) rows.splice(headerRowIndex, headerRowIndex);
+	// remove the header row (so it doesn't display in the table body)
+	rows.shift();
+	*/
 	for (var i = 0; i < rowsLength; i++) {
-		var columnValue = rows[i][columnIndex].value
-		// if we are searching for a number, this strips any commas from the search, unless they explicitly include a comma in the search
-		if (!searchString.match(new RegExp(",", "i"))) {
-			columnValue = columnValue.replace(",","").replace(",","").replace(",","");
-		}
-		if (columnValue.match(new RegExp(searchString, "i"))) {
-			resultArray.push(rows[i]);
+		if (rows[i][columnIndex] !== undefined) {
+			var columnValue = rows[i][columnIndex].value;
+		
+			// if we are searching for a number, this strips any commas from the search, unless they explicitly include a comma in the search
+			if (!searchString.match(new RegExp(",", "i"))) {
+				columnValue = columnValue.replace(",","").replace(",","").replace(",","");
+			}
+			if (columnValue.match(new RegExp(searchString, "i"))) {
+				resultArray.push(rows[i]);
+			}
+		} else {
+			// TODO: need to push some empty strings in the array so it draws the rest of the empty cells in the table;
 		}
 	} 
 	var newdata = {};
 	newdata.header = columns;
+	//if 	(headerRowIndex == 1) resultArray.splice(headerRowIndex, headerRowIndex);
+	// remove the header row (so it doesn't display in the table body)
+	//resultArray.shift();
+	console.log(resultArray);
 	newdata.content = resultArray;
 	return newdata;
 }
