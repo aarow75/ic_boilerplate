@@ -21,7 +21,7 @@ if (!Object.prototype.isArray) {
 			return true;
 		} 
 		return false;
-	}
+	};
 }
 
 // Checks to see if the value is an object.
@@ -32,7 +32,7 @@ if (!Object.prototype.isObject) {
 			return true;
 		} 
 		return false;
-	}
+	};
 }
 
 if (!Function.prototype.bind) {
@@ -46,10 +46,7 @@ if (!Function.prototype.bind) {
         fToBind = this, 
         fNOP = function () {},
         fBound = function () {
-          return fToBind.apply(this instanceof fNOP && oThis
-                                 ? this
-                                 : oThis,
-                               aArgs.concat(Array.prototype.slice.call(arguments)));
+          return fToBind.apply(this instanceof fNOP && oThis? this: oThis, aArgs.concat(Array.prototype.slice.call(arguments)));
         };
  
     fNOP.prototype = this.prototype;
@@ -68,26 +65,18 @@ Function.prototype.chain = function() {
 		if (typeof retVal == "undefined") { return this; }
 	            // else returns old value
 		else { return retVal; }
-	}
+	};
 };
 
 var IC = window.IC === undefined ? { } : IC;
 
 IC.generateGUID = function() {
     var S4 = function () {
-        return Math.floor(
-                Math.random() * 0x10000 /* 65536 */
-            ).toString(16);
+		return Math.floor(Math.random() * 0x10000 /* 65536 */).toString(16);
     };
 
-    return (
-            S4() + S4() + "-" +
-            S4() + "-" +
-            S4() + "-" +
-            S4() + "-" +
-            S4() + S4() + S4()
-        );
-}
+    return ( S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4() );
+};
 
 // This is the same as window.localStorage, except it can store and retrieve serialized Arrays and Objects
 IC.localStorage = {
@@ -134,7 +123,7 @@ IC.HTTP = {
 		    }
 		    return vars[param].split("#")[0];
 		}
-	},
+	}
 };
 
 IC.Element = {};
@@ -186,13 +175,12 @@ IC.Element.drawElement = function(content, element, parent, params) {
 	div.innerHTML = content;
 	//div.appendChild(document.createTextNode(content));
 	parent.appendChild(div);
-}
+};
 
 IC.Element.convertEntitiesToHTML = function(string) {
 	if (typeof string === "string") {
-		return string.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,'&').replace(/&nbsp;/g,' ')
+		return string.replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,'&').replace(/&nbsp;/g,' ');
 	} else {
 		return string;
-	}
-	 
-}
+	}	 
+};

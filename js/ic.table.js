@@ -5,7 +5,7 @@ if (!Array.prototype.map) {
  
     var T, A, k;
  
-    if (this == null) {
+    if (this === null) {
       throw new TypeError(" this is null or not defined");
     }
  
@@ -92,9 +92,10 @@ IC.HTTP.getSpreadsheetUrl = function(url, worksheet, callback) {
 		return "http://spreadsheets.google.com/feeds/cells/"+key+"/"+worksheet+"/public/basic?alt=json-in-script&callback="+callback;
 	}
 		
-}
+};
 
 // a rewrite of IC.Table using Google Spreadsheets API (based on Atom RSS format)
+// there must be text in each column header where there is content in that column, otherwise you will get an error
 IC.Table = function(obj){
 	var parent = obj.parent;
 	var data = obj.data;
@@ -213,13 +214,13 @@ function convertFromSpreadsheet(data) {
 			var tableColumn = id.split("C")[1] - 1;
 			converted.content[tableRow] = [];
 		}
-		for (var row = 0; row < rowLength; row++) {
-			var text = rows[row].content.$t;
-			var cell = rows[row].title.$t;
-			var idArray = rows[row].id.$t.split("/");
-			var id = idArray[idArray.length-1];
-			var tableRow = id.replace("R","").split("C")[0] - 1;
-			var tableColumn = id.split("C")[1] - 1;
+		for (row = 0; row < rowLength; row++) {
+			text = rows[row].content.$t;
+			cell = rows[row].title.$t;
+			idArray = rows[row].id.$t.split("/");
+			id = idArray[idArray.length-1];
+			tableRow = id.replace("R","").split("C")[0] - 1;
+			tableColumn = id.split("C")[1] - 1;
 			converted.content[tableRow][tableColumn] = {value:text};
 			converted.contentLength[tableRow] = tableColumn;
 		}	
@@ -245,7 +246,7 @@ function drawDataFeed(data, table) {
 	if 	(headerRowIndex == 1) content.splice(headerRowIndex, headerRowIndex);
 	// remove the header row (so it doesn't display in the table body)
 	content.shift();
-	drawDataContent(content, table, maxColumnWidth)
+	drawDataContent(content, table, maxColumnWidth);
 }
 
 function drawSearchBox(parent, data) {
@@ -329,8 +330,6 @@ function findRow(columnIndex, searchString, rows) {
 			if (columnValue.match(new RegExp(searchString, "i"))) {
 				resultArray.push(rows[i]);
 			}
-		} else {
-			// TODO: need to push some empty strings in the array so it draws the rest of the empty cells in the table;
 		}
 	} 
 	var newdata = {};

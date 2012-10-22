@@ -29,4 +29,4 @@ IC.List = function(parent, data, id, className, containerClassName) {
 	}
 	
 	drawList(parent, data);
-}
+};
